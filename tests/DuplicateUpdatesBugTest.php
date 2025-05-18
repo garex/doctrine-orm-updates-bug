@@ -27,15 +27,17 @@ final class DuplicateUpdatesBugTest extends TestCase
         ];
         $driver = new Driver();
         $conn = new Connection($params, $driver);
-        $logger = new class() implements SQLLogger
-        {
-            public function startQuery($sql, ?array $params = null, ?array $types = null)
+        if (interface_exists(SQLLogger::class)) {
+            $logger = new class() implements SQLLogger
             {
-                echo "\n$sql\n";
-            }
-            public function stopQuery() {}
-        };
-        $conn->getConfiguration()->setSQLLogger($logger);
+                public function startQuery($sql, ?array $params = null, ?array $types = null)
+                {
+                    echo "\n$sql\n";
+                }
+                public function stopQuery() {}
+            };
+            $conn->getConfiguration()->setSQLLogger($logger);
+        }
         $conn->executeStatement(<<<SQL
         CREATE TABLE humans(
             id INTEGER PRIMARY KEY,
