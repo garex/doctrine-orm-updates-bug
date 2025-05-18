@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 
@@ -36,6 +37,7 @@ final class DuplicateUpdatesBugTest extends TestCase
         }
         if (class_exists(LoggingMiddleware::class)) {
             $logger = new Logger('doctrine-sql');
+            $logger->pushHandler(new StreamHandler('php://stderr'));
             $conn->getConfiguration()->setMiddlewares([new LoggingMiddleware($logger)]);
         }
         $conn->executeStatement(<<<SQL
