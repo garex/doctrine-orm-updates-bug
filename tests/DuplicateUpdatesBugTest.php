@@ -8,11 +8,11 @@ use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
-use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 
 final class DuplicateUpdatesBugTest extends TestCase
 {
