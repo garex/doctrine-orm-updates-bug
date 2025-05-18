@@ -24,10 +24,10 @@ final class DuplicateUpdatesBugTest extends TestCase
             'memory' => true,
         ];
         $driver = new Driver();
-        $conn = new Connection($params, $driver);
+        $config = new Configuration();
+
         $logger = new Logger('doctrine-sql');
         $logger->pushHandler(new StreamHandler('php://stderr'));
-
         if (interface_exists(SQLLogger::class)) {
             $sqlLogger = new class($logger) implements SQLLogger
             {
@@ -47,10 +47,12 @@ final class DuplicateUpdatesBugTest extends TestCase
                 }
                 public function stopQuery() {}
             };
-            $conn->getConfiguration()->setSQLLogger($sqlLogger);
+            $config->setSQLLogger($sqlLogger);
         } else {
-            $conn->getConfiguration()->setMiddlewares([new LoggingMiddleware($logger)]);
+            $config->setMiddlewares([new LoggingMiddleware($logger)]);
         }
+        $conn = new Connection($params, $driver, $config);
+
         $logger->warning('Does logger works?');
         $conn->executeStatement(<<<SQL
         CREATE TABLE humans(
@@ -71,7 +73,6 @@ final class DuplicateUpdatesBugTest extends TestCase
             head_radius INTEGER
         )
         SQL);
-        $config = new Configuration();
         $driverChain = new MappingDriverChain();
 
         $xmlDriver = new SimplifiedXmlDriver([
