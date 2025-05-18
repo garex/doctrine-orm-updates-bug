@@ -20,6 +20,7 @@ use Doctrine\ORM\Mapping\Table;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
+use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 
 final class DuplicateUpdatesBugTest extends TestCase
 {
@@ -67,9 +68,12 @@ final class DuplicateUpdatesBugTest extends TestCase
         $config = new Configuration();
         $driverChain = new MappingDriverChain();
 
+        $xmlDriver = new SimplifiedXmlDriver(__DIR__);
+        $driverChain->addDriver($xmlDriver, 'Garex');
+
         $annotationsDriver = new AnnotationDriver(new AnnotationReader());
         $driverChain->addDriver($annotationsDriver, 'Garex');
-        $driverChain->setDefaultDriver($annotationsDriver);
+//         $driverChain->setDefaultDriver($annotationsDriver);
 
         $config->setMetadataDriverImpl($driverChain);
         $config->setProxyDir(sys_get_temp_dir());
