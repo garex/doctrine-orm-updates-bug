@@ -73,10 +73,6 @@ final class DuplicateUpdatesBugTest extends TestCase
         ]);
         $driverChain->addDriver($xmlDriver, 'Garex');
 
-        $annotationsDriver = new AnnotationDriver(new AnnotationReader());
-        $driverChain->addDriver($annotationsDriver, 'Garex');
-//         $driverChain->setDefaultDriver($annotationsDriver);
-
         $config->setMetadataDriverImpl($driverChain);
         $config->setProxyDir(sys_get_temp_dir());
         $config->setProxyNamespace('Proxy');

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Garex\DoctrineOrmUpdatesBug\Tests\HumanReadModel" table="human_read_models">
+
+        <id name="humanId" type="integer" column="human_id" />
+
+        <field name="humanName" column="human_name" type="string"></field>
+
+        <field name="headRadius" column="head_radius" type="integer"></field>
+
+    </entity>
+
+</doctrine-mapping>
