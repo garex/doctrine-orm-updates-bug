@@ -23,6 +23,10 @@ jobs:
 #          - 8.2
 #          - 8.3
           - 8.4
+        include:
+          - php-versions: 8.4
+            doctrine-orm-version: 3.3.3
+
     steps:
       - name: Check out
         uses: actions/checkout@v4
