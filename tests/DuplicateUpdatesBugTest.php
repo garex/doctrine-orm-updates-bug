@@ -24,20 +24,30 @@ final class DuplicateUpdatesBugTest extends TestCase
         ];
         $driver = new Driver();
         $conn = new Connection($params, $driver);
+        $logger = new Logger('doctrine-sql');
+        $logger->pushHandler(new StreamHandler('php://stderr'));
+
         if (interface_exists(SQLLogger::class)) {
-            $logger = new class() implements SQLLogger
+            $sqlLogger = new class($logger) implements SQLLogger
             {
+                /**
+                 * @var Logger
+                 */
+                private $logger;
+
+                public function __construct(Logger $logger)
+                {
+                    $this->logger = $logger;
+                }
+
                 public function startQuery($sql, ?array $params = null, ?array $types = null)
                 {
-                    echo "\n$sql\n";
+                    $this->logger->debug($sql);
                 }
                 public function stopQuery() {}
             };
-            $conn->getConfiguration()->setSQLLogger($logger);
-        }
-        if (class_exists(LoggingMiddleware::class)) {
-            $logger = new Logger('doctrine-sql');
-            $logger->pushHandler(new StreamHandler('php://stderr'));
+            $conn->getConfiguration()->setSQLLogger($sqlLogger);
+        } else {
             $conn->getConfiguration()->setMiddlewares([new LoggingMiddleware($logger)]);
         }
         $conn->executeStatement(<<<SQL
