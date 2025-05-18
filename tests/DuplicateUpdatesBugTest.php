@@ -14,6 +14,7 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 final class DuplicateUpdatesBugTest extends TestCase
 {
@@ -84,7 +85,7 @@ final class DuplicateUpdatesBugTest extends TestCase
 
         $em = new EntityManager($conn, $config);
 
-        $listener = new HumanOrHeadListener($em);
+        $listener = new HumanOrHeadListener($logger);
         $config->getEntityListenerResolver()->register($listener);
 
         $human = new Human();
@@ -136,6 +137,16 @@ class HumanOrHeadListener
 {
     public $eventsLog = [];
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     public function postPersist($entity, LifecycleEventArgs $event)
     {
         $this->denormalize($entity, $event, 'HumanOrHeadListener::'.__FUNCTION__);
@@ -150,7 +161,7 @@ class HumanOrHeadListener
     {
         $reflection = new \ReflectionClass($entity);
         $shortClass = $reflection->getShortName();
-        echo "$method - $shortClass\n";
+        $this->logger->alert("$method - $shortClass");
 
         $this->eventsLog[] = "$method $shortClass";
 
