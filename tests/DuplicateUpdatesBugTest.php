@@ -88,7 +88,13 @@ final class DuplicateUpdatesBugTest extends TestCase
 
         $em->flush();
 
-        $this->assertTrue(true);
+        $this->assertEquals($listener->eventsLog, [
+            'HumanOrHeadListener::postPersist Human',
+            'HumanOrHeadListener::postPersist Head',
+            'HumanOrHeadListener::postUpdate Head',
+            'HumanOrHeadListener::postUpdate Human',
+//             'HumanOrHeadListener::postUpdate - Human', // Should not happen!
+        ]);
     }
 }
 
@@ -137,6 +143,8 @@ class HumanReadModel
 
 class HumanOrHeadListener
 {
+    public $eventsLog = [];
+
     public function postPersist($entity, PostPersistEventArgs $event)
     {
         $this->denormalize($entity, $event, 'HumanOrHeadListener::'.__FUNCTION__);
@@ -152,6 +160,8 @@ class HumanOrHeadListener
         $reflection = new \ReflectionClass($entity);
         $shortClass = $reflection->getShortName();
         echo "$method - $shortClass\n";
+
+        $this->eventsLog[] = "$method $shortClass";
 
         $em = $event->getEntityManager();
         if ($entity instanceof Human) {
