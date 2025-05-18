@@ -53,7 +53,7 @@ final class DuplicateUpdatesBugTest extends TestCase
         }
         $conn = new Connection($params, $driver, $config);
 
-        $logger->warning('Does logger works?');
+        $logger->debug('Does logger works in debug?');
         $conn->executeStatement(<<<SQL
         CREATE TABLE humans(
             id INTEGER PRIMARY KEY,
