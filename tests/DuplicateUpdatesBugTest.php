@@ -62,7 +62,7 @@ final class DuplicateUpdatesBugTest extends TestCase
 
         $xmlDriver = new SimplifiedXmlDriver([
             __DIR__ => 'Garex\\DoctrineOrmUpdatesBug\\Tests'
-        ]);
+        ], SimplifiedXmlDriver::DEFAULT_FILE_EXTENSION, false);
         $driverChain->addDriver($xmlDriver, 'Garex');
 
         $config->setMetadataDriverImpl($driverChain);
