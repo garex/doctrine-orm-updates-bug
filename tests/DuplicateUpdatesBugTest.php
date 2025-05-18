@@ -5,6 +5,7 @@ namespace Garex\DoctrineOrmUpdatesBug\Tests;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\PDO\SQLite\Driver;
+use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -16,6 +17,7 @@ use Doctrine\ORM\Mapping\EntityListeners;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 
 final class DuplicateUpdatesBugTest extends TestCase
@@ -37,6 +39,10 @@ final class DuplicateUpdatesBugTest extends TestCase
                 public function stopQuery() {}
             };
             $conn->getConfiguration()->setSQLLogger($logger);
+        }
+        if (class_exists(LoggingMiddleware::class)) {
+            $logger = new Logger('doctrine-sql');
+            $conn->getConfiguration()->setMiddlewares([new LoggingMiddleware($logger)]);
         }
         $conn->executeStatement(<<<SQL
         CREATE TABLE humans(
