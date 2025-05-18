@@ -50,6 +50,7 @@ final class DuplicateUpdatesBugTest extends TestCase
         } else {
             $conn->getConfiguration()->setMiddlewares([new LoggingMiddleware($logger)]);
         }
+        $logger->warning('Does logger works?');
         $conn->executeStatement(<<<SQL
         CREATE TABLE humans(
             id INTEGER PRIMARY KEY,
