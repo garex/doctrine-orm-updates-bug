@@ -141,7 +141,7 @@ class HumanOrHeadListener
 
         $this->eventsLog[] = "$method $shortClass";
 
-        $em = $event->getEntityManager();
+        $em = $event->getObjectManager();
         if ($entity instanceof Human) {
             $humanId = $entity->id;
         }
