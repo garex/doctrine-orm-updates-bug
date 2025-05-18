@@ -111,46 +111,19 @@ final class DuplicateUpdatesBugTest extends TestCase
     }
 }
 
-/**
- * @Entity()
- * @EntityListeners({"HumanOrHeadListener"})
- * @Table(name="humans")
- */
 class Human
 {
-    /**
-     * @Id()
-     * @Column(type="integer")
-     * @GeneratedValue()
-     */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
     public $name;
 }
 
-/**
- * @Entity()
- * @Table(name="human_read_models")
- */
 class HumanReadModel
 {
-    /**
-     * @Id()
-     * @Column(type="integer", name="human_id")
-     */
     public $humanId;
 
-    /**
-     * @Column(type="string", name="human_name")
-     */
     public $humanName;
 
-    /**
-     * @Column(type="integer", name="head_radius")
-     */
     public $headRadius;
 }
 
@@ -200,22 +173,10 @@ class HumanOrHeadListener
     }
 }
 
-/**
- * @Entity()
- * @EntityListeners({"HumanOrHeadListener"})
- * @Table(name="heads")
- */
 class Head
 {
-    /**
-     * @Id()
-     * @Column(type="integer", name="human_id")
-     */
     public $humanId;
 
-    /**
-     * @Column(type="integer")
-     */
     public $radius;
 }
 
