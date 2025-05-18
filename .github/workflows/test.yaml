@@ -7,12 +7,14 @@ on:
   pull_request:
 jobs:
   Clone-install-test:
-    name: Test on PHP ${{ matrix.php-versions }} ${{ matrix.composer-update-param  }}
+    name: Test on PHP ${{ matrix.php-versions }} and ORM ${{ matrix.doctrine-orm-version }}
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
-        composer-update-param: ['', '--prefer-lowest']
+        doctrine-orm-version:
+          - 2.15.5
+          - 2.16.0
         php-versions:
           - 7.3
           - 7.4
@@ -45,12 +47,8 @@ jobs:
       - name: Remove composer.lock
         run: rm composer.lock
 
-      - name: Install Composer dependencies
-        run: composer install --no-progress --prefer-dist --optimize-autoloader
-
-      - name: Downgrade to lowest Composer versions
-        if: ${{ matrix.composer-update-param }}
-        run: composer update ${{ matrix.composer-update-param }} --no-progress --prefer-dist --optimize-autoloader
+      - name: Install Composer dependencies and doctrine version
+        run: composer require doctrine/orm:${{ matrix.doctrine-orm-version }} --no-progress --prefer-dist --optimize-autoloader
 
       - name: Run tests
         run: vendor/bin/phpunit tests
