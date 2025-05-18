@@ -69,7 +69,7 @@ final class DuplicateUpdatesBugTest extends TestCase
         $config->setProxyDir(sys_get_temp_dir());
         $config->setProxyNamespace('Proxy');
 
-        $em = EntityManager::create($conn, $config);
+        $em = new EntityManager($conn, $config);
 
         $listener = new HumanOrHeadListener($em);
         $config->getEntityListenerResolver()->register($listener);
