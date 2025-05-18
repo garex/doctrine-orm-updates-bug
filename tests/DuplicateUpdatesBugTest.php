@@ -4,11 +4,11 @@ namespace Garex\DoctrineOrmUpdatesBug\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\SQLite3\Driver;
+use Doctrine\DBAL\Driver\PDO\SQLite\Driver;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Event\PostUpdateEventArgs;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Entity;
@@ -17,8 +17,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use PHPUnit\Framework\TestCase;
-use Doctrine\ORM\Event\PostPersistEventArgs;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 
 final class DuplicateUpdatesBugTest extends TestCase
 {
@@ -64,7 +62,7 @@ final class DuplicateUpdatesBugTest extends TestCase
         $config->setProxyDir(sys_get_temp_dir());
         $config->setProxyNamespace('Proxy');
 
-        $em = new EntityManager($conn, $config);
+        $em = EntityManager::create($conn, $config);
 
         $listener = new HumanOrHeadListener($em);
         $config->getEntityListenerResolver()->register($listener);
@@ -74,13 +72,13 @@ final class DuplicateUpdatesBugTest extends TestCase
         $human->name = 'Qqq Www Eee';
 
         $em->persist($human);
+        $em->flush();
 
         $head = new Head();
         $head->humanId = $human->id;
         $head->radius = 9;
 
         $em->persist($head);
-
         $em->flush();
 
         $human->name = 'Www Eee';
@@ -88,13 +86,13 @@ final class DuplicateUpdatesBugTest extends TestCase
 
         $em->flush();
 
-        $this->assertEquals($listener->eventsLog, [
+        $this->assertEquals([
             'HumanOrHeadListener::postPersist Human',
             'HumanOrHeadListener::postPersist Head',
             'HumanOrHeadListener::postUpdate Head',
             'HumanOrHeadListener::postUpdate Human',
 //             'HumanOrHeadListener::postUpdate - Human', // Should not happen!
-        ]);
+        ], $listener->eventsLog);
     }
 }
 
@@ -145,12 +143,12 @@ class HumanOrHeadListener
 {
     public $eventsLog = [];
 
-    public function postPersist($entity, PostPersistEventArgs $event)
+    public function postPersist($entity, LifecycleEventArgs $event)
     {
         $this->denormalize($entity, $event, 'HumanOrHeadListener::'.__FUNCTION__);
     }
 
-    public function postUpdate($entity, PostUpdateEventArgs $event)
+    public function postUpdate($entity, LifecycleEventArgs $event)
     {
         $this->denormalize($entity, $event, 'HumanOrHeadListener::'.__FUNCTION__);
     }
