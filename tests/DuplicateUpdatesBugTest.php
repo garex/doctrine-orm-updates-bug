@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 
 final class DuplicateUpdatesBugTest extends TestCase
 {
@@ -64,9 +65,13 @@ final class DuplicateUpdatesBugTest extends TestCase
         )
         SQL);
         $config = new Configuration();
-        $reader = new AnnotationReader();
-        $driverImpl = new AnnotationDriver($reader);
-        $config->setMetadataDriverImpl($driverImpl);
+        $driverChain = new MappingDriverChain();
+
+        $annotationsDriver = new AnnotationDriver(new AnnotationReader());
+        $driverChain->addDriver($annotationsDriver, 'Garex');
+        $driverChain->setDefaultDriver($annotationsDriver);
+
+        $config->setMetadataDriverImpl($driverChain);
         $config->setProxyDir(sys_get_temp_dir());
         $config->setProxyNamespace('Proxy');
 
