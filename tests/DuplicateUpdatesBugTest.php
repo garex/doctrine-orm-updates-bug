@@ -68,7 +68,9 @@ final class DuplicateUpdatesBugTest extends TestCase
         $config = new Configuration();
         $driverChain = new MappingDriverChain();
 
-        $xmlDriver = new SimplifiedXmlDriver(__DIR__);
+        $xmlDriver = new SimplifiedXmlDriver([
+            __DIR__ => 'Garex\\DoctrineOrmUpdatesBug\\Tests'
+        ]);
         $driverChain->addDriver($xmlDriver, 'Garex');
 
         $annotationsDriver = new AnnotationDriver(new AnnotationReader());

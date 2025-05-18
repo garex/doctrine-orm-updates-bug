@@ -7,7 +7,7 @@
     <entity name="Garex\DoctrineOrmUpdatesBug\Tests\Human" table="humans">
 
         <entity-listeners>
-          <entity-listener>HumanOrHeadListener</entity-listener>
+          <entity-listener class="Garex\DoctrineOrmUpdatesBug\Tests\HumanOrHeadListener" />
         </entity-listeners>
 
         <id name="id" type="integer" column="id">
