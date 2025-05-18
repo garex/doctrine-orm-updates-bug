@@ -15,6 +15,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Doctrine\DBAL\DriverManager;
 
 final class DuplicateUpdatesBugTest extends TestCase
 {
@@ -49,7 +50,8 @@ final class DuplicateUpdatesBugTest extends TestCase
             };
             $config->setSQLLogger($sqlLogger);
         } else {
-            $config->setMiddlewares([new LoggingMiddleware($logger)]);
+            $loggingMiddleware = new LoggingMiddleware($logger);
+            $driver = $loggingMiddleware->wrap($driver);
         }
         $conn = new Connection($params, $driver, $config);
 
